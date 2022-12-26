@@ -1,87 +1,90 @@
-Peter_pan_song="";
-Harry_potter_theme_song="";
-rightWrist_x = 0;
-rightWrist_y = 0;
-leftWrist_x = 0;
-leftWrist_y = 0;
+song = "";
+song_2 = "";
 scoreleftWrist = 0;
-scorerightWrist = 0;
-song_Peter_pan = "";
-song_Harry_potter_theme = "";
+scorerightwrist = 0;
+left_play_song = "";
+right_play_song = "";
+
+leftWristX = 0;
+leftWristY = 0;
+
+rightWristX = 0;
+rightWristY = 0;
+
+function preload(){
+    song = loadSound("music2.mp3");
+    song_2 = loadSound("music3.mp3");
+
+
+}
 
 function setup(){
-    canvas = createCanvas(600,530);
-    canvas.center();
+    canvas = createCanvas(500 , 500);
+   canvas.position(500 , 200);
+
 
     video = createCapture(VIDEO);
     video.hide();
 
-    poseNet = ml5.poseNet(video,modelLoaded);
-    poseNet.on('pose',gotposes);
+    poseNet = ml5.poseNet(video , modelLoded);
+    poseNet.on('pose' , gotPoses);
 }
 
-function preload(){
-    Peter_pan_song = loadSound("music2.mp3");
-    Harry_potter_theme_song = loadSound("music.mp3");
-}
+function modelLoded(){
 
+    console.log('PoseNet is initialized');
+    
+}
+ function gotPoses(results){
+     if(results.length > 0){
+         console.log(results);
+
+         scoreleftWrist = results[0].pose.keypoints[9].score;
+         scorerightwrist = results[0].pose.keypoints[10].score;
+
+         leftWristX = results[0].pose.leftWrist.x;
+         leftWristY = results[0].pose.leftWrist.y;
+         console.log("leftWristX = " + leftWristX + "leftWristY = " + leftWristY);
+
+         rightWristX = results[0].pose.rightWrist.x;
+         rightWristY = results[0].pose.rightWrist.y;
+         console.log("rightWristX = " + rightWristX + "rightWristY = " + rightWristY);
+     }
+ }
 function draw(){
-    image(video,0,0,600,530);
+    image(video , 0 , 0 , 500 , 500);
 
-    fill("#00ff00");
-    stroke("#ff0000");
+    fill('#fce303');
+    stroke('#fce303');
+    
+    
+    left_play_song = song.isPlaying();
+    right_play_song = song_2.isPlaying();
+    
+    console.log(left_play_song);
 
-    song_Peter_pan = Peter_pan_song.isPlaying();
-    console.log(song_Peter_pan);
+    if(scoreleftWrist >0.2){
+        circle(leftWristX , leftWristY , 20);
+       song_2.stop();
 
-    song_Harry_potter_theme = Harry_potter_theme_song.isPlaying();
-    console.log(song_Harry_potter_theme);
-
-    if(scoreleftWrist > 0.2){
-        circle(leftWrist_x,leftWrist_y,20);
-        Harry_potter_theme_song.stop();
-        if(song_Peter_pan == false){
-            Peter_pan_song.play();
-        }
-        else{
-            console.log("Song Name: Peter Pan Song");
-            document.getElementById("song_id").innerHTML = "Song Name: Peter Pan Song";
-        }
+       if(left_play_song == false){
+        song.play();
+        document.getElementById("song_name").innerHTML = "Peter Pan";
+    }
+       
     }
 
-    if(scorerightWrist > 0.2){
-        circle(rightWrist_x,rightWrist_y,20);
-        Peter_pan_song.stop();
-        if(song_Harry_potter_theme == false){
-            Harry_potter_theme_song.play();
-        }
-        else{
-            console.log("Song Name: Harry Potter Theme Song");
-            document.getElementById("song_id").innerHTML = "Song Name: Harry Potter Theme Song";
-        }
+       if(right_play_song == false){
+        song_2.play();
+        document.getElementById("song_name").innerHTML = "Harry Potter";
     }
-}
-
-function modelLoaded(){
-    console.log("poseNet Is Initialized");
-}
-
-function gotposes(results){
-    if(results.length > 0){
-        console.log(results);
-
-        scoreleftWrist = results[0].pose.keypoints[9].score;
-        console.log(scoreleftWrist);
-
-        scorerightWrist = results[0].pose.keypoints[10].score;
-        console.log(scorerightWrist);
-
-        leftWrist_x = results[0].pose.leftWrist.x;
-        leftWrist_y = results[0].pose.leftWrist.y;
-        console.log("leftWrist_x = "+leftWrist_x+" leftWrist_y = "+leftWrist_y);
-
-        rightWrist_x = results[0].pose.rightWrist.x;
-        rightWrist_y = results[0].pose.rightWrist.y;
-        console.log("rightWrist_x = "+rightWrist_x+" rightWrist_y = "+rightWrist_y);
+       
     }
+    if(scorerightwrist >0.2){
+        circle(rightWristX , rightWristY , 20);
+       song.stop();
+
+   
+
+   
 }
